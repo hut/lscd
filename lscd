@@ -1,0 +1,108 @@
+#!/bin/sh
+
+index=1
+offset=0
+stty_orig=`stty -g`
+stty -echo
+
+OPT_show_hidden=
+OPT_clear=
+
+redraw=1
+
+function get_dimensions {
+    cols="$(tput cols)"
+    lines="$(tput lines)"
+}
+
+function move {
+    arg="$1"
+    index="$((index + arg))"
+    if [ "$1" -gt 0 -a "$index" ]; then
+        get_dimensions
+        total="$(listfiles | wc -l)"
+        total="$((total - lines + 1))"
+        if [ "$index" -gt "$total" ]; then
+            index="$total"
+        fi
+    fi
+    if [ "$index" -lt 1 ]; then
+        index=1
+    fi
+}
+
+function listfiles {
+    local args
+    if [ "$1" == "-v" ]; then
+        args="--color"
+    else
+        args=
+    fi
+    test -n "$OPT_show_hidden" && args="$args -A"
+    ls $args
+}
+
+function draw {
+    test -n "$OPT_clear" && clear
+    target="$(listfiles | tail -n +"$index" | head -n 1)"
+    get_dimensions
+    printf "\n\033[1;32m$USER@$(hostname):\033[1;34m$(pwd)/\033[1;33m$target\033[00m\n"
+    listfiles -v | tail -n +"$index" | head -n "$((lines - 2))" | sed "$((offset + 1))"'s/^\(.*\)$/> \0/;'
+    redraw=
+}
+
+function openfile {
+    target="$1"
+    filetype="$(stat --printf="%F" "$target")"
+    case "$filetype" in
+        directory)
+            cd "$target"
+            index=1;;
+    esac
+}
+
+while true; do
+    test -n "$redraw" && draw
+
+    read -n 1 input
+
+    case "$input" in
+        j)
+            move 1
+            redraw=1;;
+        d)
+            move 10
+            redraw=1;;
+        u)
+            move -10
+            redraw=1;;
+        k)
+            move -1
+            redraw=1;;
+        g)
+            move -9999999999
+            redraw=1;;
+        G)
+            move 9999999999
+            redraw=1;;
+        h)
+            cd ..
+            index=1
+            redraw=1;;
+        l)
+            openfile "$target"
+            redraw=1;;
+        \~)
+            cd
+            index=1
+            redraw=1;;
+        z)
+            if [ -z "$OPT_show_hidden" ]; then OPT_show_hidden=1; else OPT_show_hidden=; fi
+            redraw=1;;
+        )
+            clear;;
+        q)
+            stty $stty_orig
+            break;;
+    esac
+done
