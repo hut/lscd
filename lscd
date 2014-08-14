@@ -93,7 +93,7 @@ lscd_base () {
 
         if [ -n "$BOOL_show_info" -a "$1" == "-v" ]; then
             # Strip off the summary line
-            ls $args -l | tail -n +1
+            ls $args -l | tail -n +2
         else
             ls $args
         fi
