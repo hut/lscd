@@ -146,22 +146,29 @@ lscd_base () {
 
         read -n 1 input
 
+        # catch special key sequences
+        read -sN1 -t 0.0001 k1
+        read -sN1 -t 0.0001 k2
+        read -sN1 -t 0.0001 k3
+        [ "$input" == $'\e' ] && input=ESC
+        input="$input$k1$k2$k3"
+
         case "$input" in
-            j)
+            j|'ESC[B')
                 move 1;;
             d)
                 move 10;;
             u)
                 move -10;;
-            k)
+            k|'ESC[A')
                 move -1;;
             g)
                 move -9999999999;;
             G)
                 move 9999999999;;
-            h)
+            h|'ESC[D')
                 movedir ..;;
-            l)
+            l|'ESC[C')
                 openfile "$target"
                 redraw=1;;
             \~)
