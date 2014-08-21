@@ -239,7 +239,7 @@ lscd_base () {
                 reprint=1
                 reerase=1
                 redraw=1;;
-            )
+            $'\x0c') # CTRL+L
                 on_resize;;
             q)
                 on_exit
