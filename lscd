@@ -1,4 +1,6 @@
 #!/bin/sh
+# Copyright (C) 2014  Roman Zimbelmann <hut@lepus.uberspace.de>
+# This software is distributed under the terms of the GNU GPL version 3.
 
 LSCD_VERSION=0.1
 
