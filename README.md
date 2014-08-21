@@ -2,6 +2,8 @@ lscd v0.1
 =========
 lscd is a file browser with close integration with the unix shell.
 
+![Screenshot](screenshot.png)
+
 About
 -----
 * Author:      Roman Zimbelmann
