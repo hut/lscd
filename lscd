@@ -3,6 +3,14 @@
 LSCD_VERSION=0.1
 
 lscd_base () {
+    if [ "$1" == "--version" -o "$1" == "-v" ]; then
+        echo "lscd $LSCD_VERSION"
+        return
+    elif [ "$1" == "--help" -o "$1" == "-h" ]; then
+        echo "usage: lscd [-v | --version | -h | --help]"
+        return
+    fi
+
     local index=1
     local cursor=0
     local offset=3
@@ -39,6 +47,7 @@ lscd_base () {
     on_exit () {
         stty $stty_orig
         eval "$save_traps"
+        [ -z "$total" ] && total="$(listfiles | wc -l)"
         printf "\033[$((total - index + offset));1H"
     }
 
@@ -254,10 +263,4 @@ lscd_base () {
     done
 }
 
-if [ "$1" == "--version" -o "$1" == "-v" ]; then
-    echo "lscd $LSCD_VERSION"
-elif [ "$1" == "--help" -o "$1" == "-h" ]; then
-    echo "usage: lscd [-v | --version | -h | --help]"
-else
-    lscd_base
-fi
+lscd_base "$@"
