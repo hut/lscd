@@ -117,7 +117,7 @@ lscd_base () {
                 erase
             fi
         fi
-        target="$(listfiles | tail -n +"$((index + cursor))" | head -n 1)"
+        f="$(listfiles | tail -n +"$((index + cursor))" | head -n 1)"
         if [ -n "$reprint" ]; then
             printf "\033[1;1H\033[K"
             printf "\033[1;32m$USER@$(hostname):\033[1;34m$(pwd)\033[00m\n"
@@ -130,14 +130,14 @@ lscd_base () {
     }
 
     openfile () {
-        target="$1"
-        [ -z "$target" ] && return
-        filetype="$(stat -c %F "$target")"
+        f="$1"
+        [ -z "$f" ] && return
+        filetype="$(stat -c %F "$f")"
         case "$filetype" in
             directory)
-                movedir "$target";;
+                movedir "$f";;
             *)
-                $STRING_file_opener "$target";;
+                $STRING_file_opener "$f";;
         esac
     }
 
@@ -169,7 +169,7 @@ lscd_base () {
             h|'ESC[D')
                 movedir ..;;
             l|'ESC[C')
-                openfile "$target"
+                openfile "$f"
                 redraw=1;;
             \~)
                 movedir ~;;
