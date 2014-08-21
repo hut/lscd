@@ -4,6 +4,12 @@
 
 LSCD_VERSION=0.1
 
+f () {
+    # This function gives quick access to the "$f" variable.
+    # instead of 'mplayer "$f"' you can write 'f mplayer'.
+    "$@" "$f"
+}
+
 lscd_base () {
     if [ "$1" == "--version" -o "$1" == "-v" ]; then
         echo "lscd $LSCD_VERSION"
