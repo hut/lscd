@@ -168,7 +168,34 @@ lscd_base () {
             k|'ESC[A')
                 move -1;;
             g)
-                move -9999999999;;
+                input=
+                read -n 1 input
+                case "$input" in
+                    -) movedir -;;
+                    /) movedir /;;
+                    b) movedir /boot;;
+                    d) movedir /dev;;
+                    e) movedir /etc;;
+                    f) movedir /var/ftp;;
+                    g) move -9999999999;;
+                    h) movedir ~;;
+                    i) movedir /usr/include;;
+                    l) movedir /usr/lib;;
+                    L) movedir /var/log;;
+                    m) movedir /media;;
+                    M) movedir /mnt;;
+                    o) movedir /opt;;
+                    p) movedir /proc;;
+                    r) movedir /;;
+                    R) movedir /root;;
+                    S) movedir /srv;;
+                    s) movedir /sys;;
+                    t) movedir /tmp;;
+                    T) movedir /var/tmp;;
+                    u) movedir /usr;;
+                    v) movedir /var;;
+                    w) movedir /var/www;;
+                esac;;
             G)
                 move 9999999999;;
             h|'ESC[D')
@@ -176,8 +203,6 @@ lscd_base () {
             l|'ESC[C')
                 openfile "$f"
                 redraw=1;;
-            \~)
-                movedir ~;;
             e)
                 if [ -n "$EDITOR" ]; then
                     "$EDITOR" "$f"
