@@ -173,6 +173,9 @@ lscd_base () {
                 redraw=1;;
             \~)
                 movedir ~;;
+            e)
+                vim "$f"
+                redraw=1;;
             z)
                 if [ -z "$BOOL_show_hidden" ]; then BOOL_show_hidden=1; else BOOL_show_hidden=; fi
                 reprint=1
