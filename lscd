@@ -235,7 +235,9 @@ lscd_base () {
                 movedir ..;;
             l|'ESC[C'|$'\0d')
                 openfile "$f"
-                redraw=1;;
+                redraw=1
+                reprint=1
+                reerase=1;;
             f)
                 printf "\033[99999;1H"
                 stty $stty_orig
