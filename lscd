@@ -19,6 +19,10 @@ lscd_base () {
     local STRING_filter=
     local INT_step=6
 
+    # Alternative file opener (less) if rifle is not installed
+    type -t "$STRING_file_opener" > /dev/null 2>&1
+    [ "$?" -eq 1 ] && STRING_file_opener=less
+
     local stty_orig=`stty -g`
     stty -echo
     local save_traps="$(trap)"
