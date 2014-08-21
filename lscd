@@ -144,6 +144,10 @@ lscd_base () {
     while true; do
         test -n "$redraw" && draw
 
+        input=
+        k1=
+        k2=
+        k3=
         read -n 1 input
 
         # catch special key sequences
@@ -174,7 +178,11 @@ lscd_base () {
             \~)
                 movedir ~;;
             e)
-                vim "$f"
+                if [ -n "$EDITOR" ]; then
+                    "$EDITOR" "$f"
+                else
+                    vim "$f"
+                fi
                 redraw=1;;
             z)
                 if [ -z "$BOOL_show_hidden" ]; then BOOL_show_hidden=1; else BOOL_show_hidden=; fi
