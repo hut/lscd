@@ -210,7 +210,7 @@ lscd_base () {
                 move 9999999999;;
             h|'ESC[D')
                 movedir ..;;
-            l|'ESC[C')
+            l|'ESC[C'|$'\0d')
                 openfile "$f"
                 redraw=1;;
             f)
