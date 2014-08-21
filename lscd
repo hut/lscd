@@ -4,6 +4,7 @@ lscd_base () {
     local index=1
     local cursor=0
     local offset=3
+    local total=
 
     local redraw=1
     local reerase=1
@@ -31,6 +32,7 @@ lscd_base () {
     on_exit () {
         stty $stty_orig
         eval "$save_traps"
+        printf "\033[$((total - index + offset));1H"
     }
 
     get_dimensions () {
@@ -40,7 +42,6 @@ lscd_base () {
 
     move () {
         local arg="$1"
-        local total
         local total_visible
         local new_cursor
 
