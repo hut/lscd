@@ -1,5 +1,7 @@
 #!/bin/sh
 
+LSCD_VERSION=0.1
+
 lscd_base () {
     local index=1
     local cursor=0
@@ -248,4 +250,10 @@ lscd_base () {
     done
 }
 
-lscd_base
+if [ "$1" == "--version" -o "$1" == "-v" ]; then
+    echo "lscd $LSCD_VERSION"
+elif [ "$1" == "--help" -o "$1" == "-h" ]; then
+    echo "usage: lscd [-v | --version | -h | --help]"
+else
+    lscd_base
+fi
