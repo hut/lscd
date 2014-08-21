@@ -6,7 +6,7 @@ lscd is a file browser with close integration with the unix shell.
 
 About
 -----
-* Author:      Roman Zimbelmann
+* Author:      Roman Zimbelmann <hut@lepus.uberspace.de>
 * License:     GNU General Public License Version 3
 * Website:     https://github.com/hut/lscd
 * Download:    https://github.com/hut/lscd/archive/master.zip
