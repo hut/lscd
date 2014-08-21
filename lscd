@@ -14,6 +14,7 @@ lscd_base () {
     local BOOL_clear=
     local BOOL_show_info=
     local STRING_file_opener=rifle
+    local STRING_filter=
     local INT_step=6
 
     local stty_orig=`stty -g`
@@ -83,7 +84,7 @@ lscd_base () {
         done
     }
 
-    listfiles () {
+    _listfiles () {
         local args
         if [ "$1" == "-v" ]; then
             args="--color"
@@ -100,12 +101,21 @@ lscd_base () {
         fi
     }
 
+    listfiles () {
+        if [ -n "$STRING_filter" ]; then
+            _listfiles "$@" | grep "$STRING_filter"
+        else
+            _listfiles "$@"
+        fi
+    }
+
     movedir () {
         reerase=1
         redraw=1
         reprint=1
         index=1
         cursor=0
+        STRING_filter=
         cd "$1"
     }
 
@@ -203,6 +213,15 @@ lscd_base () {
             l|'ESC[C')
                 openfile "$f"
                 redraw=1;;
+            f)
+                printf "\033[99999;1H"
+                stty $stty_orig
+                read -e STRING_filter
+                stty -echo
+                redraw=1
+                reprint=1
+                reerase=1
+                move -9999999999;;
             e)
                 if [ -n "$EDITOR" ]; then
                     "$EDITOR" "$f"
