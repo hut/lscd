@@ -203,8 +203,7 @@ lscd_base () {
             k|'ESC[A')
                 move -1;;
             g)
-                input=
-                read -n 1 input
+                input="$(getc)"
                 case "$input" in
                     -) movedir -;;
                     /) movedir /;;
