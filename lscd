@@ -242,7 +242,7 @@ lscd_base () {
             f)
                 printf "\033[99999;1H"
                 stty $stty_orig
-                read -e STRING_filter
+                read STRING_filter
                 stty -echo
                 redraw=1
                 reprint=1
