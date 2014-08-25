@@ -64,6 +64,12 @@ lscd_base () {
         lines="$(tput lines)"
     }
 
+    getc () {
+        stty raw
+        dd bs=1 count=1 2>/dev/null
+        stty cooked
+    }
+
     move () {
         local arg="$1"
         local total_visible
@@ -178,18 +184,14 @@ lscd_base () {
     while true; do
         test -n "$redraw" && draw
 
-        input=
-        k1=
-        k2=
-        k3=
-        read -n 1 input
+        input="$(getc)"
 
         # catch special key sequences
-        read -sN1 -t 0.0001 k1
-        read -sN1 -t 0.0001 k2
-        read -sN1 -t 0.0001 k3
-        [ "$input" == $'\e' ] && input=ESC
-        input="$input$k1$k2$k3"
+        #read -sN1 -t 0.0001 k1
+        #read -sN1 -t 0.0001 k2
+        #read -sN1 -t 0.0001 k3
+        #[ "$input" == $'\e' ] && input=ESC
+        #input="$input$k1$k2$k3"
 
         case "$input" in
             j|'ESC[B')
