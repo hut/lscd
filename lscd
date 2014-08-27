@@ -172,7 +172,7 @@ lscd_base () {
     openfile () {
         f="$1"
         [ -z "$f" ] && return
-        filetype="$(stat -c %F "$f")"
+        filetype="$(stat -Lc %F "$f")"
         case "$filetype" in
             directory)
                 movedir "$f";;
