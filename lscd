@@ -89,7 +89,9 @@ lscd_base () {
         local new_cursor
 
         redraw=1
-        reprint=1
+
+        # Save the previous index value to determine if ui should be redrawn
+        old_index="$index"
 
         # Add the argument to the current cursor
         cursor="$((cursor + arg))"
@@ -127,6 +129,9 @@ lscd_base () {
         # The index should always be >0 and <$total
         [ "$index" -gt "$total" ] && index="$total"
         [ "$index" -lt 1 ] && index=1
+
+        # Order to redraw if necessary
+        [ "$index" != "$old_index" ] && reprint=1
     }
 
     # Erase the screen by filling each row with whitespaces
