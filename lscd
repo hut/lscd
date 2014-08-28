@@ -20,15 +20,15 @@ lscd_base () {
     fi
 
     # Initialize position variables
-    local index=1
-    local cursor=0
-    local offset=3
-    local total=
+    local index=1   # the number of the topmost visible line
+    local cursor=0  # the number of the selected file, relative to index
+    local offset=3  # number of the lines on the GUI not used for files, plus 1
+    local total=    # total number of files in this directory
 
     # Variables related to the GUI
-    local redraw=1
-    local reerase=1
-    local reprint=1
+    local redraw=1  # should the draw() function be entered?
+    local reprint=1 # should the interface be redrawn?
+    local reerase=1 # should the screen be erased before drawing?
 
     # Initialize settings
     local BOOL_show_hidden=
