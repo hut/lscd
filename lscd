@@ -106,10 +106,10 @@ lscd_base () {
                 index=1
             else
                 # The list doesn't fit on the screen.
-                if [ "$((index + cursor))" -ge "$total" ]; then
+                if [ "$((index + cursor))" -gt "$total" ]; then
                     # Cursor out of bounds. Put it at the very bottom.
                     cursor="$((total_visible - 1))"
-                    index="$((total - total_visible))"
+                    index="$((total - total_visible + 1))"
                 else
                     # Move the index down so the visible part of the list
                     # also shows the cursor
@@ -126,12 +126,39 @@ lscd_base () {
             cursor=0
         fi
 
-        # The index should always be >0 and <$total
+        # The index should always be >0 and <$total-$total_visible
         [ "$index" -gt "$total" ] && index="$total"
         [ "$index" -lt 1 ] && index=1
 
-        # Order to redraw if necessary
-        [ "$index" != "$old_index" ] && reprint=1
+        if [ "$index" != "$old_index" ]; then
+            # Redraw if the index (and thus the visible files) has changed
+            reprint=1
+
+            # Jump a step when scrolling
+            if [ "$index" -gt "$old_index" ]; then
+                # Jump a $INT_step down
+                if [ "$index" -lt "$((total - total_visible + 1 - INT_step))" ]; then
+                    index="$((index + INT_step))"
+                    cursor="$((cursor - INT_step))"
+                else
+                    index="$((total - total_visible + 1))"
+                    cursor="$((total_visible - 1))"
+                fi
+            else
+                # Jump a $INT_step up
+                if [ "$index" -gt "$INT_step" ]; then
+                    index="$((index - INT_step))"
+                    cursor="$((cursor + INT_step))"
+                else
+                    index=1
+                    cursor=0
+                fi
+            fi
+        fi
+
+        # The index should always be >0 and <$total-$total_visible
+        [ "$index" -gt "$total" ] && index="$total"
+        [ "$index" -lt 1 ] && index=1
     }
 
     # Erase the screen by filling each row with whitespaces
