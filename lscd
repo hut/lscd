@@ -89,6 +89,8 @@ lscd_base () {
         local new_cursor
 
         redraw=1
+        max_index="$((total - total_visible + 1))"
+        max_cursor="$((total_visible - 1))"
 
         # Save the previous index value to determine if ui should be redrawn
         old_index="$index"
@@ -100,24 +102,23 @@ lscd_base () {
             # Cursor moved past the bottom of the list
 
             if [ "$total_visible" -ge "$total" ]; then
-                # The list fits entirely on the screen, so place the
-                # cursor at the bottom of it.
-                cursor="$((total_visible - 1))"
+                # The list fits entirely on the screen.
                 index=1
             else
                 # The list doesn't fit on the screen.
                 if [ "$((index + cursor))" -gt "$total" ]; then
                     # Cursor out of bounds. Put it at the very bottom.
-                    cursor="$((total_visible - 1))"
-                    index="$((total - total_visible + 1))"
+                    index="$max_index"
                 else
                     # Move the index down so the visible part of the list
                     # also shows the cursor
                     difference="$((total_visible - 1 - cursor))"
                     index="$((index - difference))"
-                    cursor="$((total_visible - 1))"
                 fi
             fi
+
+            # In any case, place the cursor on the last file.
+            cursor="$max_cursor"
         fi
 
         if [ "$cursor" -lt 0 ]; then
@@ -137,12 +138,12 @@ lscd_base () {
             # Jump a step when scrolling
             if [ "$index" -gt "$old_index" ]; then
                 # Jump a $INT_step down
-                if [ "$index" -lt "$((total - total_visible + 1 - INT_step))" ]; then
+                if [ "$index" -lt "$((max_index - INT_step))" ]; then
                     index="$((index + INT_step))"
                     cursor="$((cursor - INT_step))"
                 else
-                    index="$((total - total_visible + 1))"
-                    cursor="$((total_visible - 1))"
+                    index="$max_index"
+                    cursor="$max_cursor"
                 fi
             else
                 # Jump a $INT_step up
