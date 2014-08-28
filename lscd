@@ -23,7 +23,8 @@ lscd_base () {
     local index=1   # the number of the topmost visible line
     local cursor=0  # the number of the selected file, relative to index
     local offset=3  # number of the lines on the GUI not used for files, plus 1
-    local total=    # total number of files in this directory
+    local total=0   # total number of files in this directory
+    local total_visible=0
 
     # Variables related to the GUI
     local redraw=1  # should the draw() function be entered?
@@ -87,43 +88,48 @@ lscd_base () {
     # A function used for moving the cursor around
     move () {
         local arg="$1"
-        local total_visible
         local new_cursor
 
         redraw=1
+        reerase=1
+        reprint=1
 
         # Add the argument to the current cursor
         cursor="$((cursor + arg))"
 
-        # Handle downward movement and possible corner cases
-        if [ "$1" -gt 0 ]; then
-            total="$(listfiles | wc -l)"
-            total_visible="$((total - index))"
-            if [ "$index" -gt "$((total - lines + offset - 1))" ]; then
-                if [ "$cursor" -gt "$total_visible" ]; then
-                    cursor="$total_visible"
+        if [ "$cursor" -ge "$total_visible" ]; then
+            # Cursor moved past the bottom of the list
+
+            if [ "$total_visible" -ge "$total" ]; then
+                # The list fits entirely on the screen, so place the
+                # cursor at the bottom of it.
+                cursor="$((total_visible - 1))"
+                index=1
+            else
+                # The list doesn't fit on the screen.
+                if [ "$((index + cursor))" -ge "$total" ]; then
+                    # Cursor out of bounds. Put it at the very bottom.
+                    cursor="$((total_visible - 1))"
+                    index="$((total - total_visible))"
+                else
+                    # Move the index down so the visible part of the list
+                    # also shows the cursor
+                    difference="$((total_visible - 1 - cursor))"
+                    index="$((index - difference))"
+                    cursor="$((total_visible - 1))"
                 fi
-            elif [ "$cursor" -gt "$((lines - offset))" ]; then
-                new_cursor="$((lines - offset - INT_step))"
-                index="$((index + cursor - new_cursor))"
-                cursor="$new_cursor"
-                reerase=1
-                reprint=1
             fi
         fi
 
-        # Handle a cursor that is too small
         if [ "$cursor" -lt 0 ]; then
-            if [ "$index" -gt 1 ]; then
-                cursor="$((INT_step))"
-                index="$((index - INT_step))"
-                reerase=1
-                reprint=1
-            else
-                cursor=0
-            fi
-            [ "$index" -lt 1 ] && index=1
+            # Cursor is above the list, so scroll up.
+            index="$((index + cursor))"
+            cursor=0
         fi
+
+        # The index should always be >0 and <$total
+        [ "$index" -gt "$total" ] && index="$total"
+        [ "$index" -lt 1 ] && index=1
     }
 
     # Erase the screen by filling each row with whitespaces
@@ -184,6 +190,16 @@ lscd_base () {
             else
                 erase
             fi
+        fi
+
+        # Determine the number of total files in the directory
+        total="$(listfiles | wc -l)"
+
+        # Determine the number of visible files 
+        if [ "$total" -gt "$((lines - offset + 1))" ]; then
+            total_visible="$((lines - offset + 1))"
+        else
+            total_visible="$total"
         fi
 
         # Determine the current file
