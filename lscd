@@ -29,7 +29,6 @@ lscd_base () {
     # Variables related to the GUI
     local redraw=1  # should the draw() function be entered?
     local reprint=1 # should the interface be redrawn?
-    local reerase=1 # should the screen be erased before drawing?
 
     # Initialize settings
     local BOOL_show_hidden=
@@ -55,7 +54,6 @@ lscd_base () {
     # Signal handler for resizing, also executed when typing Ctrl+L
     on_resize () {
         redraw=1
-        reerase=1
         reprint=1
     }
 
@@ -91,7 +89,6 @@ lscd_base () {
         local new_cursor
 
         redraw=1
-        reerase=1
         reprint=1
 
         # Add the argument to the current cursor
@@ -170,7 +167,6 @@ lscd_base () {
 
     # Change the directory
     movedir () {
-        reerase=1
         redraw=1
         reprint=1
         index=1
@@ -184,7 +180,7 @@ lscd_base () {
         get_dimensions
 
         # Erase the screen if necessary
-        if [ -n "$reerase" ]; then
+        if [ -n "$reprint" ]; then
             if [ -n "$BOOL_clear" ]; then
                 clear
             else
@@ -218,7 +214,6 @@ lscd_base () {
         # Clear the gui flags
         redraw=
         reprint=
-        reerase=
 
         # Move the cursor to the requested position
         printf "\033[$((cursor + 2));1H"
@@ -298,8 +293,7 @@ lscd_base () {
             l|'ESC[C'|$'\0d')
                 openfile "$f"
                 redraw=1
-                reprint=1
-                reerase=1;;
+                reprint=1;;
             f)
                 # Open a prompt for entering the filter
                 printf "\033[99999;1H"
@@ -308,7 +302,6 @@ lscd_base () {
                 stty -echo
                 redraw=1
                 reprint=1
-                reerase=1
                 move -9999999999;;
             e)
                 # Open the current file in an editor
@@ -322,13 +315,11 @@ lscd_base () {
                 # Toggle displaying hidden files
                 if [ -z "$BOOL_show_hidden" ]; then BOOL_show_hidden=1; else BOOL_show_hidden=; fi
                 reprint=1
-                reerase=1
                 redraw=1;;
             x)
                 # Toggle showing additional file information
                 if [ -z "$BOOL_show_info" ]; then BOOL_show_info=1; else BOOL_show_info=; fi
                 reprint=1
-                reerase=1
                 redraw=1;;
             $'\x0c') # CTRL+L
                 on_resize;;
