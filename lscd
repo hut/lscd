@@ -32,6 +32,7 @@ lscd_base () {
 
     # Initialize settings
     local BOOL_show_hidden=
+    local BOOL_group_directories=1
     local BOOL_clear=
     local BOOL_show_info=
     local STRING_file_opener=rifle
@@ -174,6 +175,7 @@ lscd_base () {
             args=
         fi
         test -n "$BOOL_show_hidden" && args="$args -A"
+        test -n "$BOOL_group_directories" && args="$args --group-directories-first"
 
         if [ -n "$BOOL_show_info" -a "$1" == "-v" ]; then
             # Strip off the summary line
@@ -341,6 +343,11 @@ lscd_base () {
             z)
                 # Toggle displaying hidden files
                 if [ -z "$BOOL_show_hidden" ]; then BOOL_show_hidden=1; else BOOL_show_hidden=; fi
+                reprint=1
+                redraw=1;;
+            s)
+                # Toggle directory grouping
+                if [ -z "$BOOL_group_directories" ]; then BOOL_group_directories=1; else BOOL_group_directories=; fi
                 reprint=1
                 redraw=1;;
             x)
